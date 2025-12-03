@@ -14,6 +14,7 @@ Group:		Libraries
 Source0:	https://github.com/google/libultrahdr/archive/v%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	ddfbb3e6ff777d62f2d696d644c90a72
 Patch0:		%{name}-opt.patch
+Patch1:		%{name}-includes.patch
 URL:		https://github.com/google/libultrahdr
 BuildRequires:	cmake >= 3.15
 %{?with_java:BuildRequires:	jdk}
@@ -74,6 +75,7 @@ Statyczna biblioteka libuhdr.
 %prep
 %setup -q
 %patch -P0 -p1
+%patch -P1 -p1
 
 %build
 # .pc file generation expects relative INCLUDEDIR/LIBDIR
