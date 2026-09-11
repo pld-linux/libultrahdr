@@ -1,21 +1,26 @@
 # TODO: actually package java part, then enable bcond by default
 #
 # Conditional build:
-%bcond_with	java	# Java interface (JNI wrapper+Java classes)
+%bcond_with	java		# Java interface (JNI wrapper+Java classes)
+%bcond_with	gles		# GPU acceleration (via EGL+GLES)
+%bcond_with	smpte2094	# SMPTE 2094-50 support (TODO: finish)
 #
 Summary:	Library for encoding and decoding ultrahdr images
 Summary(pl.UTF-8):	Biblioteka do kodowania i dekodowania obrazów ultrahdr
 Name:		libultrahdr
-Version:	1.4.0
+Version:	1.5.1
 Release:	1
-License:	Apache v2.0
+License:	MIT and Apache v2.0
 Group:		Libraries
 #Source0Download: https://github.com/google/libultrahdr/releases
 Source0:	https://github.com/google/libultrahdr/archive/v%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	ddfbb3e6ff777d62f2d696d644c90a72
+# Source0-md5:	4f2d0d25b9f54eeefb69f1e2be9dd254
 Patch0:		%{name}-opt.patch
-Patch1:		%{name}-includes.patch
 URL:		https://github.com/google/libultrahdr
+%if %{with gles}
+BuildRequires:	EGL-devel
+BuildRequires:	OpenGLESv3-devel >= 3.0
+%endif
 BuildRequires:	cmake >= 3.15
 %{?with_java:BuildRequires:	jdk}
 BuildRequires:	libjpeg-devel
@@ -52,6 +57,10 @@ Summary:	Header files for libuhdr library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki libuhdr
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
+%if %{with gles}
+Requires:	EGL-devel
+Requires:	OpenGLESv3-devel >= 3.0
+%endif
 Requires:	libjpeg-devel
 
 %description devel
@@ -75,14 +84,15 @@ Statyczna biblioteka libuhdr.
 %prep
 %setup -q
 %patch -P0 -p1
-%patch -P1 -p1
 
 %build
 # .pc file generation expects relative INCLUDEDIR/LIBDIR
 %cmake -B build \
 	-DCMAKE_INSTALL_INCLUDEDIR=include \
 	-DCMAKE_INSTALL_LIBDIR=%{_lib} \
-	%{?with_java:-DUHDR_BUILD_JAVA=ON}
+	%{?with_java:-DUHDR_BUILD_JAVA=ON} \
+	%{?with_gles:-DUHDR_ENABLE_GLES=ON} \
+	%{?with_smpte2094:-DUHDR_ENABLE_SMPTE2094_50=ON}
 
 %{__make} -C build
 
@@ -100,7 +110,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc DESCRIPTION README.md
+%doc DESCRIPTION LICENSE-MIT README.md
 %attr(755,root,root) %{_bindir}/ultrahdr_app
 %{_libdir}/libuhdr.so.*.*.*
 %ghost %{_libdir}/libuhdr.so.1
