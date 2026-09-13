@@ -8,13 +8,13 @@
 Summary:	Library for encoding and decoding ultrahdr images
 Summary(pl.UTF-8):	Biblioteka do kodowania i dekodowania obrazów ultrahdr
 Name:		libultrahdr
-Version:	1.5.1
+Version:	2.0.2
 Release:	1
 License:	MIT and Apache v2.0
 Group:		Libraries
 #Source0Download: https://github.com/google/libultrahdr/releases
 Source0:	https://github.com/google/libultrahdr/archive/v%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	4f2d0d25b9f54eeefb69f1e2be9dd254
+# Source0-md5:	4c3aad16b273a5d127de330cb0697790
 Patch0:		%{name}-opt.patch
 Patch1:		%{name}-system-libsmpte2094-50.patch
 URL:		https://github.com/google/libultrahdr
@@ -24,6 +24,8 @@ BuildRequires:	OpenGLESv3-devel >= 3.0
 %endif
 BuildRequires:	cmake >= 3.15
 %{?with_java:BuildRequires:	jdk}
+# TODO: requires WITH_EXPERIMENTAL_GAIN_MAP=1
+#BuildRequires:	libheif-devel
 BuildRequires:	libjpeg-devel
 %{?with_smpte2094:BuildRequires:	libsmpte2094-50-devel >= 0.1.4}
 BuildRequires:	libstdc++-devel >= 6:7
@@ -117,7 +119,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc DESCRIPTION LICENSE-MIT README.md
 %attr(755,root,root) %{_bindir}/ultrahdr_app
 %{_libdir}/libuhdr.so.*.*.*
-%ghost %{_libdir}/libuhdr.so.1
+%ghost %{_libdir}/libuhdr.so.2
 
 %files devel
 %defattr(644,root,root,755)
