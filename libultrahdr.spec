@@ -3,7 +3,7 @@
 # Conditional build:
 %bcond_with	java		# Java interface (JNI wrapper+Java classes)
 %bcond_with	gles		# GPU acceleration (via EGL+GLES)
-%bcond_with	smpte2094	# SMPTE 2094-50 support (TODO: finish)
+%bcond_with	smpte2094	# SMPTE 2094-50 support
 #
 Summary:	Library for encoding and decoding ultrahdr images
 Summary(pl.UTF-8):	Biblioteka do kodowania i dekodowania obrazów ultrahdr
@@ -16,6 +16,7 @@ Group:		Libraries
 Source0:	https://github.com/google/libultrahdr/archive/v%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	4f2d0d25b9f54eeefb69f1e2be9dd254
 Patch0:		%{name}-opt.patch
+Patch1:		%{name}-system-libsmpte2094-50.patch
 URL:		https://github.com/google/libultrahdr
 %if %{with gles}
 BuildRequires:	EGL-devel
@@ -24,8 +25,10 @@ BuildRequires:	OpenGLESv3-devel >= 3.0
 BuildRequires:	cmake >= 3.15
 %{?with_java:BuildRequires:	jdk}
 BuildRequires:	libjpeg-devel
+%{?with_smpte2094:BuildRequires:	libsmpte2094-50-devel >= 0.1.4}
 BuildRequires:	libstdc++-devel >= 6:7
 BuildRequires:	rpmbuild(macros) >= 1.605
+%{?with_smpte2094:Requires:	libsmpte2094-50 >= 0.1.4}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -84,6 +87,7 @@ Statyczna biblioteka libuhdr.
 %prep
 %setup -q
 %patch -P0 -p1
+%patch -P1 -p1
 
 %build
 # .pc file generation expects relative INCLUDEDIR/LIBDIR
